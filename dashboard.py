@@ -4,6 +4,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 import altair as alt
 import json
+from mct_media_collector import collect_media_data  # ✅ our backend helper
 
 # ========================================
 # PAGE CONFIGURATION
@@ -19,7 +20,6 @@ st.set_page_config(
 # ========================================
 st.markdown("""
 <style>
-
 /* ===== GLOBAL BACKGROUND ===== */
 .stApp {
     background: radial-gradient(circle at top left, #002933 0%, #001a1f 100%);
@@ -128,7 +128,6 @@ h1, h2, h3 {
 h4, h5 {
     color: #99f6e4 !important;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -148,7 +147,7 @@ SCOPES = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapi
 creds = Credentials.from_service_account_info(json.loads(GSHEET_JSON), scopes=SCOPES)
 client = gspread.authorize(creds)
 
-SHEET_URL = "https://docs.google.com/spreadsheets/d/1xUnrXB0tSG2EZhGr1WXsytKQu7KbudrjDhz1AHbjKGc/edit?gid=857397725#gid=857397725"
+SHEET_URL = "https://docs.google.com/spreadsheets/d/1xUnrXB0tSG2EZhGr1WXsytKQu7KbudrjDhz1AHbjKGc"
 key = SHEET_URL.split("/d/")[1].split("/")[0]
 worksheet = client.open_by_key(key).worksheet("Results")
 data = worksheet.get_all_records()
@@ -159,7 +158,7 @@ if df.empty:
     st.stop()
 
 # ========================================
-# SIDEBAR FILTERS
+# SIDEBAR FILTERS & COLLECTOR BUTTON
 # ========================================
 st.sidebar.header("⚙️ Search Settings")
 platforms = ["All"] + sorted(df["Platform"].dropna().unique().tolist())
@@ -170,6 +169,7 @@ selected_platform = st.sidebar.selectbox("Platform", platforms)
 selected_sentiment = st.sidebar.selectbox("Sentiment", sentiments)
 selected_theme = st.sidebar.selectbox("Theme", themes)
 
+# Filter dataset dynamically
 filtered = df.copy()
 if selected_platform != "All":
     filtered = filtered[filtered["Platform"] == selected_platform]
@@ -177,6 +177,14 @@ if selected_sentiment != "All":
     filtered = filtered[filtered["Sentiment"] == selected_sentiment]
 if selected_theme != "All":
     filtered = filtered[filtered["All Themes"] == selected_theme]
+
+# Collector Button
+st.sidebar.markdown("---")
+if st.sidebar.button("🔄 Run Collector Now"):
+    with st.spinner("Collecting latest media data..."):
+        result = collect_media_data()
+        st.success(f"✅ Collector finished — {result}")
+        st.stop()
 
 # ========================================
 # METRICS
@@ -219,14 +227,13 @@ theme_chart = (
     alt.Chart(theme_counts)
     .mark_bar()
     .encode(
-        x=alt.X("Theme:N", sort="-y"),
-        y=alt.Y("Count:Q"),
+        x=alt.X("Theme:N", sort="-y", title="Theme"),
+        y=alt.Y("Count:Q", title="Articles"),
         color=alt.Color("Theme:N", legend=None)
     )
     .properties(height=300)
 )
 st.altair_chart(theme_chart, use_container_width=True)
-
 st.markdown("---")
 
 # ========================================
