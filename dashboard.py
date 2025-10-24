@@ -105,7 +105,7 @@ h4, h5 {
 # HEADER
 # ========================================
 st.markdown("<h1>🟢 MCT Media Monitoring Dashboard</h1>", unsafe_allow_html=True)
-st.markdown("<h4>Outlier reports and analytics for monitored media coverage</h4>", unsafe_allow_html=True)
+st.markdown("<h4>from Social media and over 50 digital sources owned by Media Houses in Tanzania</h4>", unsafe_allow_html=True)
 st.markdown("---")
 
 # ========================================
@@ -260,3 +260,4 @@ csv = filtered.to_csv(index=False).encode("utf-8")
 st.download_button("⬇️ Download CSV", csv, "mct_data.csv", "text/csv")
 
 st.success("✅ Dashboard styled successfully — Professional Analytics Mode Active")
+
