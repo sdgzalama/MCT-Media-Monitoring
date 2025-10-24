@@ -13,42 +13,29 @@ import gspread
 from google.oauth2.service_account import Credentials
 from openai import OpenAI
 from datetime import datetime
+import streamlit as st
 
 # ------------------------------
-# Load Secrets
+# Load Secrets (Streamlit-safe)
 # ------------------------------
-with open(".streamlit/secrets.toml", "r", encoding="utf-8") as f:
-    content = f.read()
-
-def extract_secret(key):
-    match = re.search(rf'{key}\s*=\s*"(.*?)"', content)
-    return match.group(1) if match else None
-
-OPENAI_API_KEY = extract_secret("OPENAI_API_KEY")
-RESULTS_SHEET_URL = extract_secret("RESULTS_SHEET_URL")
-
-GSHEET_JSON_BLOCK = re.search(r"GSHEET_JSON\s*=\s*'''(.*?)'''", content, re.S)
-GSHEET_JSON = json.loads(GSHEET_JSON_BLOCK.group(1)) if GSHEET_JSON_BLOCK else None
+GSHEET_JSON = st.secrets["GSHEET_JSON"]
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+RESULTS_SHEET_URL = st.secrets["RESULTS_SHEET_URL"]
 
 # ------------------------------
 # Initialize clients
 # ------------------------------
 client_ai = OpenAI(api_key=OPENAI_API_KEY)
 
-# Google Sheets auth via GSHEET_JSON from secrets
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",
 ]
 if not GSHEET_JSON:
-    raise RuntimeError("GSHEET_JSON missing in .streamlit/secrets.toml")
+    raise RuntimeError("GSHEET_JSON missing in Streamlit secrets")
 
-creds = Credentials.from_service_account_info(GSHEET_JSON, scopes=SCOPES)
+creds = Credentials.from_service_account_info(json.loads(GSHEET_JSON), scopes=SCOPES)
 client_gsheets = gspread.authorize(creds)
-
-# Helpful once: confirm which SA needs Sheet access
-print("Service account:", creds.service_account_email)
-
 
 # ------------------------------
 # Define RSS sources
@@ -62,7 +49,7 @@ FEEDS = [
 ]
 
 # ------------------------------
-# Keyword dictionary (abbreviated header; full 150 items)
+# Keyword dictionary (Full)
 # ------------------------------
 THEME_KEYWORDS = {
     "📰 Uhuru wa Vyombo vya Habari (Media Freedom)": [
@@ -196,73 +183,73 @@ def fetch_rss():
     return pd.DataFrame(records)
 
 # ------------------------------
+# Determine Media Sector Impact
+# ------------------------------
+def determine_media_impact(row):
+    themes = row.get("All Themes", "")
+    text = row.get("Content", "")
+
+    if any(keyword in themes for keyword in [
+        "Media Freedom", "Vyombo vya Habari", "Journalist Safety",
+        "Media Economy", "Ukiukaji", "Malalamiko"
+    ]):
+        return "Direct Impact on Media Sector"
+    elif any(keyword in themes for keyword in [
+        "Political Coverage", "Public Sentiment", "Social", "Human Rights"
+    ]):
+        return "Indirect / Contextual Impact"
+
+    try:
+        prompt = f"""
+        You are a Tanzanian media analyst.
+        Does this text have a *direct impact* on the media sector
+        (e.g., journalists, media freedom, economy) or is it indirect?
+        Reply with one:
+        - Direct Impact on Media Sector
+        - Indirect / Contextual Impact
+        - No Direct Impact
+        Text: {text}
+        """
+        resp = client_ai.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0
+        )
+        return resp.choices[0].message.content.strip()
+    except Exception:
+        return "No Direct Impact"
+
+# ------------------------------
 # Google Sheet upload
 # ------------------------------
-# def upload_to_gsheet(df):
-#     key = RESULTS_SHEET_URL.split("/d/")[1].split("/")[0]
-#     worksheet = client_gsheets.open_by_key(key).get_worksheet(0)
-#     rows = df.astype(str).fillna("").values.tolist()
-#     worksheet.append_rows(rows, value_input_option="USER_ENTERED")
-#     print(f"✅ Uploaded {len(df)} rows to Google Sheet!")
-
 def upload_to_gsheet(df, sheet_title="Results"):
     if not RESULTS_SHEET_URL or "/d/" not in RESULTS_SHEET_URL:
-        raise RuntimeError("RESULTS_SHEET_URL is missing/invalid in secrets.")
+        raise RuntimeError("RESULTS_SHEET_URL invalid or missing in secrets.")
 
     key = RESULTS_SHEET_URL.split("/d/")[1].split("/")[0]
     sh = client_gsheets.open_by_key(key)
 
-    # get or create worksheet
     try:
         ws = sh.worksheet(sheet_title)
     except gspread.exceptions.WorksheetNotFound:
         ws = sh.add_worksheet(title=sheet_title, rows=1000, cols=26)
 
-    # write header if empty
     if len(ws.get_all_values()) == 0:
         ws.append_row(list(df.columns), value_input_option="USER_ENTERED")
 
-    # append in chunks
     rows = df.astype(str).fillna("").values.tolist()
     CHUNK = 300
     for i in range(0, len(rows), CHUNK):
         ws.append_rows(rows[i:i+CHUNK], value_input_option="USER_ENTERED")
     print(f"✅ Uploaded {len(df)} rows to Google Sheet (worksheet: {sheet_title}).")
 
-
-import requests
-
 # ------------------------------
-# API Upload (optional)
+# Collector Function (used by dashboard)
 # ------------------------------
-API_URL = "https://example.com/api/mct-media"  # fake endpoint
-API_KEY = "your_api_key_here"  # ⬅️ Optional if your API requires auth headers
-
-def upload_to_api(df):
-    """
-    TEST MODE: Simulates sending analyzed data to an API.
-    Prints JSON payload sample and total rows to verify correctness.
-    """
-    try:
-        payload = df.to_dict(orient="records")
-        print("\n====================== 🧪 TEST API UPLOAD PREVIEW ======================\n")
-        print(f"API_URL: {API_URL}")
-        print(f"Rows to send: {len(payload)}")
-        print("\n📦 Sample payload (first 2 rows):\n")
-        print(json.dumps(payload[:2], indent=2, ensure_ascii=False))
-        print("\n=======================================================================\n")
-        print("✅ TEST SUCCESS — Data prepared correctly for API upload.\n")
-        print("👉 (No actual network request was made.)\n")
-    except Exception as e:
-        print(f"❌ Error preparing data for API upload: {e}")
-
-
-# ------------------------------
-# MAIN EXECUTION
-# ------------------------------
-if __name__ == "__main__":
+def collect_media_data():
     df = fetch_rss()
-    print(f"✅ Collected {len(df)} articles from {len(FEEDS)} sources.")
+    if df.empty:
+        return "No articles fetched from RSS feeds."
 
     df["Detected Themes"] = df["Content"].apply(detect_themes)
     df["AI Themes"] = df.apply(lambda r: ai_classify_themes(r["Content"]) if not r["Detected Themes"] else [], axis=1)
@@ -270,82 +257,10 @@ if __name__ == "__main__":
         lambda r: ", ".join(set(r["Detected Themes"] + r["AI Themes"])) if (r["Detected Themes"] or r["AI Themes"]) else "—",
         axis=1
     )
-
-    # ✅ Detect sentiment before using it in df_final
     df["Sentiment"] = df["Content"].apply(detect_sentiment)
-
-    # ------------------------------
-    # Determine Media Sector Impact
-    # ------------------------------
-
-    # ------------------------------
-    def determine_media_impact(row):
-        """
-        Determines if a news item affects the media sector.
-        Logic:
-        - Directly affects media if theme involves media freedom, journalist safety,
-        media economy, or violations.
-        - Indirect/neutral if theme is social, political, or public sentiment only.
-        - If unclear, use AI to judge based on context.
-        """
-        themes = row.get("All Themes", "")
-        text = row.get("Content", "")
-
-        if any(keyword in themes for keyword in [
-            "Media Freedom", "Vyombo vya Habari", "Journalist Safety",
-            "Media Economy", "Ukiukaji", "Malalamiko"
-        ]):
-            return "Direct Impact on Media Sector"
-
-        elif any(keyword in themes for keyword in [
-            "Political Coverage", "Public Sentiment", "Social", "Human Rights"
-        ]):
-            return "Indirect / Contextual Impact"
-
-        # Optional: AI refinement
-        try:
-            prompt = f"""
-            You are a Tanzanian media analyst. 
-            Does the following text have a *direct impact* on the media sector
-            (like on journalists, media economy, freedom of expression),
-            or is it *indirect* or *unrelated*?
-            Answer with one of:
-            - "Direct Impact on Media Sector"
-            - "Indirect / Contextual Impact"
-            - "No Direct Impact"
-            Text: {text}
-            """
-            resp = client_ai.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0
-            )
-            return resp.choices[0].message.content.strip()
-        except Exception:
-            return "No Direct Impact"
-
     df["Media Sector Impact"] = df.apply(determine_media_impact, axis=1)
 
-
-    # df_final = df[["Platform", "Content", "Link", "Date", "All Themes", "Sentiment"]]
-    df_final = df[["Platform", "Content", "Link", "Date", "All Themes", "Sentiment", "Media Sector Impact"]]
-
-    # Pretty print results
-    print("\n====================== MCT MEDIA MONITORING RESULTS ======================\n")
-    for i, row in df_final.head(10).iterrows():
-        print(f"📰 {i+1}. Platform: {row['Platform']}")
-        print(f"   📅 Date: {row['Date']}")
-        snippet = (row['Content'][:160] + "...") if len(row['Content']) > 160 else row['Content']
-        print(f"   ✍️  Content: {snippet}")
-        print(f"   🏷️  Themes: {row['All Themes']}")
-        print(f"   💬 Sentiment: {row['Sentiment']}")
-        print(f"   🧩 Media Impact: {row['Media Sector Impact']}\n")
-    print("==========================================================================\n")
-
-    # Upload results to Google Sheet
+    df_final = df[["Platform", "Date", "All Themes", "Sentiment", "Media Sector Impact", "Link"]]
     upload_to_gsheet(df_final, sheet_title="Results")
-    # upload_to_api(df_final)
-    # upload_to_gsheet(df_final)
-    # upload_to_api(df_final)
 
-
+    return f"Collected and uploaded {len(df_final)} articles successfully."
