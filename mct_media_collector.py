@@ -246,21 +246,110 @@ def upload_to_gsheet(df, sheet_title="Results"):
 # ------------------------------
 # Collector Function (used by dashboard)
 # ------------------------------
+# def collect_media_data():
+#     df = fetch_rss()
+#     if df.empty:
+#         return "No articles fetched from RSS feeds."
+
+#     df["Detected Themes"] = df["Content"].apply(detect_themes)
+#     df["AI Themes"] = df.apply(lambda r: ai_classify_themes(r["Content"]) if not r["Detected Themes"] else [], axis=1)
+#     df["All Themes"] = df.apply(
+#         lambda r: ", ".join(set(r["Detected Themes"] + r["AI Themes"])) if (r["Detected Themes"] or r["AI Themes"]) else "—",
+#         axis=1
+#     )
+#     df["Sentiment"] = df["Content"].apply(detect_sentiment)
+#     df["Media Sector Impact"] = df.apply(determine_media_impact, axis=1)
+
+#     df_final = df[["Platform", "Date", "All Themes", "Sentiment", "Media Sector Impact", "Link"]]
+#     upload_to_gsheet(df_final, sheet_title="Results")
+
+#     return f"Collected and uploaded {len(df_final)} articles successfully."
+
 def collect_media_data():
     df = fetch_rss()
+    print(f"✅ Collected {len(df)} articles from {len(FEEDS)} sources.")
+
     if df.empty:
         return "No articles fetched from RSS feeds."
 
+    # -------------- THEME DETECTION --------------
     df["Detected Themes"] = df["Content"].apply(detect_themes)
     df["AI Themes"] = df.apply(lambda r: ai_classify_themes(r["Content"]) if not r["Detected Themes"] else [], axis=1)
     df["All Themes"] = df.apply(
         lambda r: ", ".join(set(r["Detected Themes"] + r["AI Themes"])) if (r["Detected Themes"] or r["AI Themes"]) else "—",
         axis=1
     )
+
+    # -------------- SENTIMENT ANALYSIS --------------
     df["Sentiment"] = df["Content"].apply(detect_sentiment)
+
+    # -------------- IMPACT ANALYSIS --------------
+    def determine_media_impact(row):
+        """
+        Determines if a news item affects the media sector.
+        Logic:
+        - Directly affects media if theme involves media freedom, journalist safety,
+          media economy, or violations.
+        - Indirect/neutral if theme is social, political, or public sentiment only.
+        - If unclear, use AI to judge based on context.
+        """
+        themes = row.get("All Themes", "")
+        text = row.get("Content", "")
+
+        if any(keyword in themes for keyword in [
+            "Media Freedom", "Vyombo vya Habari", "Journalist Safety",
+            "Media Economy", "Ukiukaji", "Malalamiko"
+        ]):
+            return "Direct Impact on Media Sector"
+
+        elif any(keyword in themes for keyword in [
+            "Political Coverage", "Public Sentiment", "Social", "Human Rights"
+        ]):
+            return "Indirect / Contextual Impact"
+
+        # Optional AI refinement
+        try:
+            prompt = f"""
+            You are a Tanzanian media analyst.
+            Does the following text have a *direct impact* on the media sector
+            (like on journalists, media economy, or freedom of expression),
+            or is it *indirect* or *unrelated*?
+            Answer with one of:
+            - "Direct Impact on Media Sector"
+            - "Indirect / Contextual Impact"
+            - "No Direct Impact"
+            Text: {text}
+            """
+            resp = client_ai.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0
+            )
+            return resp.choices[0].message.content.strip()
+        except Exception:
+            return "No Direct Impact"
+
     df["Media Sector Impact"] = df.apply(determine_media_impact, axis=1)
 
-    df_final = df[["Platform", "Date", "All Themes", "Sentiment", "Media Sector Impact", "Link"]]
+    # -------------- FINAL STRUCTURE --------------
+    df_final = df[["Platform", "Content", "Link", "Date", "All Themes", "Sentiment", "Media Sector Impact"]]
+
+    # -------------- PRETTY CONSOLE OUTPUT --------------
+    print("\n====================== MCT MEDIA MONITORING RESULTS ======================\n")
+    for i, row in df_final.head(10).iterrows():
+        print(f"📰 {i+1}. Platform: {row['Platform']}")
+        print(f"   📅 Date: {row['Date']}")
+        snippet = (row['Content'][:160] + "...") if len(row['Content']) > 160 else row['Content']
+        print(f"   ✍️  Content: {snippet}")
+        print(f"   🏷️  Themes: {row['All Themes']}")
+        print(f"   💬 Sentiment: {row['Sentiment']}")
+        print(f"   🧩 Media Impact: {row['Media Sector Impact']}\n")
+    print("==========================================================================\n")
+
+    # -------------- UPLOAD --------------
     upload_to_gsheet(df_final, sheet_title="Results")
 
+    # Return summary message for Streamlit
     return f"Collected and uploaded {len(df_final)} articles successfully."
+
+
