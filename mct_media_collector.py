@@ -40,12 +40,128 @@ client_gsheets = gspread.authorize(creds)
 # ------------------------------
 # Define RSS sources
 # ------------------------------
+# FEEDS = [
+#     "https://www.mwananchi.co.tz/feeds/rss.xml",
+#     "https://www.thecitizen.co.tz/feeds/rss.xml",
+#     "https://habarileo.co.tz/feed",
+#     "https://www.ippmedia.com/en/feed",
+#     "https://www.bbc.com/swahili/index.xml",
+#     "https://rss.app/feeds/JwaKtg2e0IN8uZmg.xml"
+# ]
+# ------------------------------
+# Define RSS sources
+# ------------------------------
 FEEDS = [
+    # --- Major national outlets ---
     "https://www.mwananchi.co.tz/feeds/rss.xml",
     "https://www.thecitizen.co.tz/feeds/rss.xml",
     "https://habarileo.co.tz/feed",
     "https://www.ippmedia.com/en/feed",
+    "https://www.dailynews.co.tz/feed",
+    "https://mtanzania.co.tz/feed/",
+    "https://www.mwanahalisionline.com/feed/",
+    "https://dar24.com/feed/",
+    "https://bongo5.com/feed/",
+    "https://millardayo.com/feed/",
+    "https://www.globalpublishers.co.tz/feed/",
+    "https://www.fullshangweblog.co.tz/feed/",
+    "https://www.fikrapevu.com/feed/",
+    "https://www.tzaffairs.org/feed/",
+    "https://taifaleo.nation.africa/feed/",
     "https://www.bbc.com/swahili/index.xml",
+    "https://zanzibar24.co.tz/feed/",
+    "https://www.swahilitimes.co.tz/feed/",
+    "https://sautikubwa.org/feed/",
+    "https://www.udakuspecially.com/feeds/posts/default",
+    "https://www.tanzaniainvest.com/feed",
+    "https://mtembezi.co.tz/feed/",
+    "https://kivumbinews.co.tz/feed/",
+    "https://mwanaspoti.co.tz/feeds/rss.xml",
+    "https://www.tanzania.go.tz/rss",
+    "https://jamiiforums.com/forums/-/index.rss",
+    "https://www.ajirazetu.co.tz/feeds/posts/default",
+    "https://shaffihdauda.co.tz/feed/",
+    "https://kahamaonline.co.tz/feed/",
+    "https://www.michuzi.co.tz/feeds/posts/default",
+
+    # --- Regional news (Zanzibar, Dodoma, Mbeya, etc.) ---
+    "https://zanzinews.blogspot.com/feeds/posts/default",
+    "https://www.mtembezi.co.tz/feed/",
+    "https://kyelatoday.blogspot.com/feeds/posts/default",
+    "https://morogoroonline.blogspot.com/feeds/posts/default",
+    "https://dodomanews.wordpress.com/feed/",
+    "https://arusha24.co.tz/feed/",
+    "https://iringa24.blogspot.com/feeds/posts/default",
+    "https://lindinews.blogspot.com/feeds/posts/default",
+    "https://rukwanews.blogspot.com/feeds/posts/default",
+    "https://songwenews.blogspot.com/feeds/posts/default",
+    "https://mbeyacity.blogspot.com/feeds/posts/default",
+    "https://tundumacity.blogspot.com/feeds/posts/default",
+    "https://mwanza24.blogspot.com/feeds/posts/default",
+    "https://geitacity.blogspot.com/feeds/posts/default",
+    "https://maraonline.blogspot.com/feeds/posts/default",
+    "https://katavi24.blogspot.com/feeds/posts/default",
+    "https://njombeonline.blogspot.com/feeds/posts/default",
+    "https://ruvuma24.blogspot.com/feeds/posts/default",
+    "https://morogorocity.blogspot.com/feeds/posts/default",
+
+    # --- Sector-specific feeds ---
+    # Economy, Business & Agriculture
+    "https://www.tanzaniainvest.com/feed",
+    "https://www.ippmedia.com/en/business/feed",
+    "https://www.thecitizen.co.tz/tanzania/news/business/-/feeds/rss.xml",
+    "https://agrinews.co.tz/feed/",
+    "https://kilimonews.co.tz/feed/",
+    "https://agronews.co.tz/feed/",
+    "https://www.kilimo.go.tz/rss",
+    "https://www.nbs.go.tz/rss",
+    "https://zabuni.co.tz/feed/",
+    "https://www.azaniapost.com/feed/",
+    "https://mipango.go.tz/rss",
+
+    # Health, Education & Human Rights
+    "https://www.who.int/rss-feeds/news-english.xml",
+    "https://unicef.org/tanzania/rss.xml",
+    "https://www.unaids.org/en/rss.xml",
+    "https://thechanzo.com/feed/",
+    "https://thechanzoletu.substack.com/feed",
+    "https://humanrights.or.tz/feed/",
+    "https://jamiihealth.blogspot.com/feeds/posts/default",
+    "https://tanzaniapresscentre.org/feed/",
+    "https://uhurumedia.co.tz/feed/",
+    "https://thechanzo.com/category/uchumi/feed/",
+    "https://thechanzo.com/category/jamii/feed/",
+    "https://thechanzo.com/category/siam/feed/",
+    "https://thechanzo.com/category/siasa/feed/",
+
+    # --- NGO, Civic, and Watchdog sources ---
+    "https://taweza.or.tz/feed/",
+    "https://policyforum-tz.org/rss.xml",
+    "https://twaweza.org/feed/",
+    "https://hakielimu.or.tz/feed/",
+    "https://songas.com/feed/",
+    "https://legalservices.co.tz/feed/",
+    "https://wanawakewakatoliki.or.tz/feed/",
+    "https://barazalawanasiasa.or.tz/feed/",
+    "https://mis.org.tz/feed/",
+    "https://zlsctz.org/feed/",
+    "https://tanlap.or.tz/feed/",
+    "https://jamiiwatch.or.tz/feed/",
+    "https://watetezi.or.tz/feed/",
+    "https://defenddefenders.org/feed/",
+    "https://mediazanzibar.or.tz/feed/",
+    "https://mwanzapressclub.or.tz/feed/",
+    "https://mct.or.tz/feed/",
+
+    # --- International or East African feeds relevant to TZ ---
+    "https://www.theeastafrican.co.ke/feeds/rss.xml",
+    "https://www.standardmedia.co.ke/rss/headlines.php",
+    "https://www.monitor.co.ug/uganda/rss.xml",
+    "https://nation.africa/kenya/rss.xml",
+    "https://www.voaswahili.com/rss",
+    "https://www.dw.com/overlay/rss/tz",
+    "https://allafrica.com/tools/headlines/rdf/tanzania/headlines.rdf",
+    "https://allafrica.com/tools/headlines/rdf/eastafrica/headlines.rdf",
     "https://rss.app/feeds/JwaKtg2e0IN8uZmg.xml"
 ]
 
@@ -315,4 +431,5 @@ def collect_media_data():
     upload_to_gsheet(df_final, sheet_title="Results")
 
     return f"✅ Collected and uploaded {len(df_final)} articles successfully."
+
 
