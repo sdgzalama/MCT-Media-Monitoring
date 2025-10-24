@@ -130,6 +130,8 @@ if df.empty:
 # Ensure Date column is proper datetime
 if "Date" in df.columns:
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
+    # LOGO
+st.sidebar.image("MCTLOGO.png", use_column_width=True)
 
 # ========================================
 # SIDEBAR FILTERS & COLLECTOR BUTTON
@@ -260,4 +262,5 @@ csv = filtered.to_csv(index=False).encode("utf-8")
 st.download_button("⬇️ Download CSV", csv, "mct_data.csv", "text/csv")
 
 st.success("✅ Dashboard styled successfully — Professional Analytics Mode Active")
+
 
