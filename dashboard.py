@@ -197,16 +197,16 @@ st.sidebar.markdown("---")
 if st.sidebar.button("🔄 Run Collector Now"):
     with st.spinner("Collecting latest media data..."):
         result = collect_media_data()
-        st.success(f"✅ Collector finished — {result}")
+        st.success(f" Collector finished — {result}")
         st.stop()
 
 # ========================================
 # METRICS
 # ========================================
 col1, col2, col3 = st.columns(3)
-col1.metric("📰 Articles", len(filtered))
-col2.metric("🌍 Platforms", filtered["Platform"].nunique())
-col3.metric("🏷️ Themes", filtered["All Themes"].nunique())
+col1.metric(" Articles", len(filtered))
+col2.metric(" Platforms", filtered["Platform"].nunique())
+col3.metric(" Themes", filtered["All Themes"].nunique())
 st.markdown("---")
 
 # ========================================
@@ -234,7 +234,7 @@ if not filtered.empty:
     )
     st.altair_chart(sentiment_chart, use_container_width=True)
 
-    st.subheader("🏷️ Themes Distribution")
+    st.subheader(" Themes Distribution")
     theme_counts = (
         filtered["All Themes"]
         .value_counts()
@@ -259,14 +259,15 @@ st.markdown("---")
 # ========================================
 # TABLE + DOWNLOAD
 # ========================================
-st.subheader("📄 Detailed Records")
+st.subheader(" Detailed Records")
 cols = [c for c in ["Platform", "Date", "All Themes", "Sentiment", "Media Sector Impact", "Link"] if c in filtered.columns]
 st.dataframe(filtered[cols], use_container_width=True, height=500)
 
 csv = filtered.to_csv(index=False).encode("utf-8")
-st.download_button("⬇️ Download CSV", csv, "mct_data.csv", "text/csv")
+st.download_button(" Download CSV", csv, "mct_data.csv", "text/csv")
 
-st.success("✅ Dashboard styled successfully — Professional Analytics Mode Active")
+st.success(" Dashboard styled successfully — Professional Analytics Mode Active")
+
 
 
 
