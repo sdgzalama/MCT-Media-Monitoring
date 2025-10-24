@@ -223,6 +223,33 @@ def determine_media_impact(row):
 # ------------------------------
 # Google Sheet upload
 # ------------------------------
+# def upload_to_gsheet(df, sheet_title="Results"):
+#     if not RESULTS_SHEET_URL or "/d/" not in RESULTS_SHEET_URL:
+#         raise RuntimeError("RESULTS_SHEET_URL invalid or missing in secrets.")
+
+#     key = RESULTS_SHEET_URL.split("/d/")[1].split("/")[0]
+#     sh = client_gsheets.open_by_key(key)
+
+#     try:
+#         ws = sh.worksheet(sheet_title)
+#     except gspread.exceptions.WorksheetNotFound:
+#         ws = sh.add_worksheet(title=sheet_title, rows=2000, cols=26)
+
+#     # ✅ normalize date and clear
+#     df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.strftime("%Y-%m-%d %H:%M")
+#     ws.clear()
+#     ws.append_row(list(df.columns), value_input_option="USER_ENTERED")
+
+#     # ✅ upload data
+#     rows = df.astype(str).fillna("").values.tolist()
+#     CHUNK = 300
+#     for i in range(0, len(rows), CHUNK):
+#         ws.append_rows(rows[i:i+CHUNK], value_input_option="USER_ENTERED")
+
+#     print(f"✅ Replaced sheet data with {len(df)} rows (worksheet: {sheet_title}).")
+# ------------------------------
+# Google Sheet upload (fixed alignment)
+# ------------------------------
 def upload_to_gsheet(df, sheet_title="Results"):
     if not RESULTS_SHEET_URL or "/d/" not in RESULTS_SHEET_URL:
         raise RuntimeError("RESULTS_SHEET_URL invalid or missing in secrets.")
@@ -235,18 +262,37 @@ def upload_to_gsheet(df, sheet_title="Results"):
     except gspread.exceptions.WorksheetNotFound:
         ws = sh.add_worksheet(title=sheet_title, rows=2000, cols=26)
 
-    # ✅ normalize date and clear
-    df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.strftime("%Y-%m-%d %H:%M")
-    ws.clear()
-    ws.append_row(list(df.columns), value_input_option="USER_ENTERED")
+    # ✅ Select and reorder columns exactly as desired
+    expected_columns = [
+        "Platform",
+        "Content",
+        "Link",
+        "Date",
+        "All Themes",
+        "Sentiment",
+        "Media Sector Impact"
+    ]
+    for col in expected_columns:
+        if col not in df.columns:
+            df[col] = ""
 
-    # ✅ upload data
+    df = df[expected_columns]
+
+    # ✅ Normalize date
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.strftime("%a, %d %b %Y %H:%M:%S")
+
+    # ✅ Clean and overwrite
+    ws.clear()
+    ws.append_row(expected_columns, value_input_option="USER_ENTERED")
+
+    # ✅ Upload in chunks
     rows = df.astype(str).fillna("").values.tolist()
     CHUNK = 300
     for i in range(0, len(rows), CHUNK):
         ws.append_rows(rows[i:i+CHUNK], value_input_option="USER_ENTERED")
 
-    print(f"✅ Replaced sheet data with {len(df)} rows (worksheet: {sheet_title}).")
+    print(f"✅ Uploaded {len(df)} rows to Google Sheet (worksheet: {sheet_title}).")
+
 
 # ------------------------------
 # Collector Function (used by dashboard)
@@ -269,3 +315,4 @@ def collect_media_data():
     upload_to_gsheet(df_final, sheet_title="Results")
 
     return f"✅ Collected and uploaded {len(df_final)} articles successfully."
+
