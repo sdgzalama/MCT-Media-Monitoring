@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+env/
+                    
+# Streamlit cache
+.streamlit/secrets.toml
+.streamlit/config.toml
+.streamlit/cache/
+.streamlit/state/
+
+# Local temp/credentials
+food_analyzer.json
+*.sqlite
+*.db
+*.log
+.DS_Store
