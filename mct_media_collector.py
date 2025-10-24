@@ -46,71 +46,72 @@ FEEDS = [
     "https://habarileo.co.tz/feed",
     "https://www.ippmedia.com/en/feed",
     "https://www.bbc.com/swahili/index.xml",
+    "https://rss.app/feeds/JwaKtg2e0IN8uZmg.xml"
 ]
 
 # ------------------------------
-# Keyword dictionary (Full)
+# Keyword dictionary
 # ------------------------------
 THEME_KEYWORDS = {
     "📰 Uhuru wa Vyombo vya Habari (Media Freedom)": [
-        "uhuru wa vyombo vya habari","uhuru wa habari","uhuru wa kujieleza",
-        "sheria ya habari","kanuni za vyombo vya habari","udhibiti wa vyombo vya habari",
-        "tume ya vyombo vya habari","leseni ya chombo cha habari","kuzuiwa kwa habari",
-        "kufungiwa gazeti","kufutwa leseni","kutopewa habari","sensa ya habari",
-        "taarifa kwa umma","uwazi wa serikali"
+        "uhuru wa vyombo vya habari", "uhuru wa habari", "uhuru wa kujieleza",
+        "sheria ya habari", "kanuni za vyombo vya habari", "udhibiti wa vyombo vya habari",
+        "tume ya vyombo vya habari", "leseni ya chombo cha habari", "kuzuiwa kwa habari",
+        "kufungiwa gazeti", "kufutwa leseni", "kutopewa habari", "sensa ya habari",
+        "taarifa kwa umma", "uwazi wa serikali"
     ],
     "🧑🏽💻 Usalama wa Waandishi wa Habari (Journalist Safety)": [
-        "mwandishi wa habari","kushambuliwa kwa mwandishi","kukamatwa kwa mwandishi",
-        "kuhojiwa na polisi","kutekwa","kutoweka","vitisho dhidi ya waandishi",
-        "unyanyasaji kwa waandishi","kesi ya mwandishi","kupigwa","kunyimwa ulinzi",
-        "kujeruhiwa kazini","kukamatwa bila sababu","waandishi wa habari wanawake",
+        "mwandishi wa habari", "kushambuliwa kwa mwandishi", "kukamatwa kwa mwandishi",
+        "kuhojiwa na polisi", "kutekwa", "kutoweka", "vitisho dhidi ya waandishi",
+        "unyanyasaji kwa waandishi", "kesi ya mwandishi", "kupigwa", "kunyimwa ulinzi",
+        "kujeruhiwa kazini", "kukamatwa bila sababu", "waandishi wa habari wanawake",
         "mashambulizi mtandaoni"
     ],
     "💰 Uchumi wa Vyombo vya Habari (Media Economy)": [
-        "biashara ya vyombo vya habari","mapato ya matangazo","changamoto za kiuchumi",
-        "kupunguza wafanyakazi","mishahara midogo","kudorora kwa matangazo",
-        "kampuni za habari","gharama za uzalishaji","usimamizi wa vyombo",
-        "kufungwa kwa redio","kufungwa kwa gazeti","kushuka kwa mapato",
-        "mmiliki wa chombo cha habari","vyombo binafsi","vyombo vya serikali"
+        "biashara ya vyombo vya habari", "mapato ya matangazo", "changamoto za kiuchumi",
+        "kupunguza wafanyakazi", "mishahara midogo", "kudorora kwa matangazo",
+        "kampuni za habari", "gharama za uzalishaji", "usimamizi wa vyombo",
+        "kufungwa kwa redio", "kufungwa kwa gazeti", "kushuka kwa mapato",
+        "mmiliki wa chombo cha habari", "vyombo binafsi", "vyombo vya serikali"
     ],
     "⚖️ Ukiukaji na Malalamiko (Press Violations & Complaints)": [
-        "malalamiko","tume ya maadili","makosa ya kimaadili","taarifa za uongo",
-        "habari za uzushi","kuchafua jina","uchochezi","upotoshaji","kashfa",
-        "kukejeli","kutukana","upendeleo wa vyombo","mahojiano yenye upendeleo",
-        "habari zenye ubaguzi","chuki mtandaoni","maoni ya wachambuzi",
-        "kampeni za chuki","lugha ya matusi","taarifa zisizo sahihi","propaganda"
+        "malalamiko", "tume ya maadili", "makosa ya kimaadili", "taarifa za uongo",
+        "habari za uzushi", "kuchafua jina", "uchochezi", "upotoshaji", "kashfa",
+        "kukejeli", "kutukana", "upendeleo wa vyombo", "mahojiano yenye upendeleo",
+        "habari zenye ubaguzi", "chuki mtandaoni", "maoni ya wachambuzi",
+        "kampeni za chuki", "lugha ya matusi", "taarifa zisizo sahihi", "propaganda"
     ],
     "🗳️ Upendeleo wa Kisiasa (Media Bias and Political Coverage)": [
-        "upendeleo wa kisiasa","vyombo vya ccm","vyombo vya chadema","vyombo vya act wazalendo",
-        "vyombo vya upinzani","kampeni za uchaguzi","habari za uchaguzi","wagombea",
-        "kura","uchaguzi mkuu","tume ya uchaguzi","kampeni ya chama","mgombea urais",
-        "habari za chama","chama tawala","vyama vya siasa","taarifa za kampeni",
-        "mahojiano ya kisiasa","makala ya kisiasa","mjadala wa kisiasa"
+        "upendeleo wa kisiasa", "vyombo vya ccm", "vyombo vya chadema", "vyombo vya act wazalendo",
+        "vyombo vya upinzani", "kampeni za uchaguzi", "habari za uchaguzi", "wagombea",
+        "kura", "uchaguzi mkuu", "tume ya uchaguzi", "kampeni ya chama", "mgombea urais",
+        "habari za chama", "chama tawala", "vyama vya siasa", "taarifa za kampeni",
+        "mahojiano ya kisiasa", "makala ya kisiasa", "mjadala wa kisiasa"
     ],
     "💬 Hisia za Umma (Public Sentiment & Perception)": [
-        "maoni ya wananchi","mitazamo ya jamii","hisia za wananchi","mjadala mtandaoni",
-        "hasira za wananchi","pongezi kwa serikali","ukosoaji wa serikali","ukosoaji wa vyombo vya habari",
-        "uaminifu wa vyombo","maoni ya wasikilizaji","maoni ya watazamaji",
-        "mijadala ya twitter","mijadala ya facebook","mjadala wa x space",
-        "mitazamo ya vijana","mitazamo ya wanawake","mitazamo ya wanahabari",
-        "mada za mtandaoni","gumzo mtandaoni","kampeni za hashtag"
+        "maoni ya wananchi", "mitazamo ya jamii", "hisia za wananchi", "mjadala mtandaoni",
+        "hasira za wananchi", "pongezi kwa serikali", "ukosoaji wa serikali", "ukosoaji wa vyombo vya habari",
+        "uaminifu wa vyombo", "maoni ya wasikilizaji", "maoni ya watazamaji",
+        "mijadala ya twitter", "mijadala ya facebook", "mjadala wa x space",
+        "mitazamo ya vijana", "mitazamo ya wanawake", "mitazamo ya wanahabari",
+        "mada za mtandaoni", "gumzo mtandaoni", "kampeni za hashtag"
     ],
     "🌍 Masuala ya Kijamii Yanayogusa Sekta ya Habari (Social & Human Rights Issues)": [
-        "haki za binadamu","haki ya kupata habari","uwajibikaji wa serikali",
-        "demokrasia","uwazi na uwajibikaji","uhuru wa kujieleza","uongozi bora",
-        "ukandamizaji","rushwa","haki za wanawake","haki za watoto",
-        "ajira kwa vijana","elimu ya habari","usawa wa kijinsia","unyanyasaji wa kijinsia",
-        "vyombo vya kijamii","ushawishi wa mitandao","taarifa za kidijitali",
-        "habari za mitandaoni","usalama wa mtandao"
+        "haki za binadamu", "haki ya kupata habari", "uwajibikaji wa serikali",
+        "demokrasia", "uwazi na uwajibikaji", "uhuru wa kujieleza", "uongozi bora",
+        "ukandamizaji", "rushwa", "haki za wanawake", "haki za watoto",
+        "ajira kwa vijana", "elimu ya habari", "usawa wa kijinsia", "unyanyasaji wa kijinsia",
+        "vyombo vya kijamii", "ushawishi wa mitandao", "taarifa za kidijitali",
+        "habari za mitandaoni", "usalama wa mtandao"
     ],
     "🧠 Maneno ya Kiufundi na Uchanganuzi wa Data (Analytics & AI Monitoring)": [
-        "ufuatiliaji wa habari","kuchambua maudhui","uchambuzi wa hisia","ai katika habari",
-        "data za kijamii","mfumo wa uchambuzi","dashibodi ya habari","ukusanyaji wa taarifa",
-        "takwimu za habari","ripoti ya habari","mwenendo wa vyombo","mitazamo chanya",
-        "mitazamo hasi","ufahamu wa umma","kuenea kwa habari","ufuatiliaji wa matukio",
-        "mwenendo wa mitandao","ufuatiliaji wa habari za uchaguzi","ripoti ya kila wiki",
-        "taarifa za kila mwezi","ulinganifu wa maudhui","ushawishi wa watumiaji",
-        "vyombo vya habari mtandaoni","blogu za habari","tovuti za habari"
+        "ufuatiliaji wa habari", "kuchambua maudhui", "uchambuzi wa hisia", "ai katika habari",
+        "data za kijamii", "mfumo wa uchambuzi", "dashibodi ya habari", "ukusanyaji wa taarifa",
+        "takwimu za habari", "ripoti ya habari", "mwenendo wa vyombo", "mitazamo chanya",
+        "mitazamo hasi", "ufahamu wa umma", "kuenea kwa habari", "ufuatiliaji wa matukio",
+        "mwenendo wa mitandao", "ufuatiliaji wa habari za uchaguzi", "ripoti ya kila wiki",
+        "taarifa za kila mwezi", "ulinganifu wa maudhui", "ushawishi wa watumiaji",
+        "vyombo vya habari mtandaoni", "blogu za habari", "tovuti za habari"
     ]
 }
 
@@ -232,16 +233,20 @@ def upload_to_gsheet(df, sheet_title="Results"):
     try:
         ws = sh.worksheet(sheet_title)
     except gspread.exceptions.WorksheetNotFound:
-        ws = sh.add_worksheet(title=sheet_title, rows=1000, cols=26)
+        ws = sh.add_worksheet(title=sheet_title, rows=2000, cols=26)
 
-    if len(ws.get_all_values()) == 0:
-        ws.append_row(list(df.columns), value_input_option="USER_ENTERED")
+    # ✅ normalize date and clear
+    df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.strftime("%Y-%m-%d %H:%M")
+    ws.clear()
+    ws.append_row(list(df.columns), value_input_option="USER_ENTERED")
 
+    # ✅ upload data
     rows = df.astype(str).fillna("").values.tolist()
     CHUNK = 300
     for i in range(0, len(rows), CHUNK):
         ws.append_rows(rows[i:i+CHUNK], value_input_option="USER_ENTERED")
-    print(f"✅ Uploaded {len(df)} rows to Google Sheet (worksheet: {sheet_title}).")
+
+    print(f"✅ Replaced sheet data with {len(df)} rows (worksheet: {sheet_title}).")
 
 # ------------------------------
 # Collector Function (used by dashboard)
@@ -260,7 +265,7 @@ def collect_media_data():
     df["Sentiment"] = df["Content"].apply(detect_sentiment)
     df["Media Sector Impact"] = df.apply(determine_media_impact, axis=1)
 
-    df_final = df[["Platform", "Date", "All Themes", "Sentiment", "Media Sector Impact", "Link"]]
+    df_final = df[["Platform", "Content", "Link", "Date", "All Themes", "Sentiment", "Media Sector Impact"]]
     upload_to_gsheet(df_final, sheet_title="Results")
 
-    return f"Collected and uploaded {len(df_final)} articles successfully."
+    return f"✅ Collected and uploaded {len(df_final)} articles successfully."
