@@ -294,7 +294,7 @@ def upload_to_gsheet(df, sheet_title="Results"):
     except gspread.exceptions.WorksheetNotFound:
         ws = sh.add_worksheet(title=sheet_title, rows=2000, cols=26)
 
-    # ✅ Select and reorder columns exactly as desired
+    # ✅ Reorder columns
     expected_columns = [
         "Platform",
         "Content",
@@ -310,21 +310,29 @@ def upload_to_gsheet(df, sheet_title="Results"):
 
     df = df[expected_columns]
 
-    # ✅ Normalize date
+    # ✅ Normalize date format
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce").dt.strftime("%a, %d %b %Y %H:%M:%S")
 
-    # ✅ Clean and overwrite
-    ws.clear()
-    ws.append_row(expected_columns, value_input_option="USER_ENTERED")
+    # ✅ Read existing records from Google Sheet (if any)
+    existing_data = ws.get_all_records()
+    if existing_data:
+        existing_df = pd.DataFrame(existing_data)
+        # Drop duplicates by link (to avoid re-adding same articles)
+        new_df = df[~df["Link"].isin(existing_df["Link"])]
+        final_df = pd.concat([existing_df, new_df], ignore_index=True)
+    else:
+        final_df = df
 
-    # ✅ Upload in chunks
-    rows = df.astype(str).fillna("").values.tolist()
+    # ✅ Clear and rewrite headers + all data (so order remains consistent)
+    ws.clear()
+    ws.append_row(list(final_df.columns), value_input_option="USER_ENTERED")
+
+    rows = final_df.astype(str).fillna("").values.tolist()
     CHUNK = 300
     for i in range(0, len(rows), CHUNK):
         ws.append_rows(rows[i:i+CHUNK], value_input_option="USER_ENTERED")
 
-    print(f"✅ Uploaded {len(df)} rows to Google Sheet (worksheet: {sheet_title}).")
-
+    print(f"✅ Appended {len(df)} new rows (total: {len(final_df)} records).")
 
 # ------------------------------
 # Collector Function (used by dashboard)
